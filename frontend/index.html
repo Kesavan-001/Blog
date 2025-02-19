@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BlogVerse</title>
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">BlogVerse</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navmenu">
+        <div class="ms-auto">
+          <button id="navLogin" class="btn btn-outline-light me-2">Login</button>
+          <button id="navRegister" class="btn btn-outline-light me-2">Register</button>
+          <button id="navDashboard" class="btn btn-outline-light me-2">Dashboard</button>
+          <button id="navBlogPosts" class="btn btn-outline-light me-2">Blog Posts</button>
+          <button id="navProfile" class="btn btn-outline-light me-2">Profile</button>
+          <button id="toggleTheme" class="btn btn-dark">🌙</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Login Section -->
+  <section id="loginSection" class="section" style="display:none;">
+    <div class="container">
+      <div class="card form-card shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title text-center mb-4">Login</h2>
+          <form id="loginForm">
+            <div class="mb-3">
+              <input type="email" id="loginEmail" class="form-control" placeholder="Email" required />
+            </div>
+            <div class="mb-3">
+              <input type="password" id="loginPassword" class="form-control" placeholder="Password" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+          <p class="text-center mt-3">Don't have an account? <a href="#" id="gotoRegister">Register here</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Register Section -->
+  <section id="registerSection" class="section" style="display:none;">
+    <div class="container">
+      <div class="card form-card shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title text-center mb-4">Register</h2>
+          <form id="registerForm">
+            <div class="mb-3">
+              <input type="text" id="regUsername" class="form-control" placeholder="Username" required />
+            </div>
+            <div class="mb-3">
+              <input type="email" id="regEmail" class="form-control" placeholder="Email" required />
+            </div>
+            <div class="mb-3">
+              <input type="password" id="regPassword" class="form-control" placeholder="Password" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+          </form>
+          <p class="text-center mt-3">Already have an account? <a href="#" id="gotoLogin">Login here</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Section (Post Creation) -->
+  <section id="dashboardSection" class="section" style="display:none;">
+    <div class="container">
+      <h2 class="text-center mb-4">Create a New Blog Post</h2>
+      <div class="card form-card shadow-lg">
+        <div class="card-body">
+          <form id="postForm">
+            <div class="mb-3">
+              <input type="text" id="postTitle" class="form-control" placeholder="Title" required />
+            </div>
+            <div class="mb-3">
+              <textarea id="postContent" class="form-control" placeholder="Content" rows="5" required></textarea>
+            </div>
+            <div class="mb-3">
+              <input type="url" id="postImage" class="form-control" placeholder="Image URL (optional)" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Post</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Blog Posts Section -->
+  <section id="blogPostsSection" class="section" style="display:none;">
+    <div class="container">
+      <h2 class="text-center mb-4">All Blog Posts</h2>
+      <div id="blogContainer" class="row g-4">
+        <!-- Blog cards will be dynamically inserted here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Profile Section -->
+  <section id="profileSection" class="section" style="display:none;">
+    <div class="container">
+      <h2 class="text-center mb-4">Profile</h2>
+      <div class="card form-card shadow-lg">
+        <div class="card-body">
+          <form id="profileForm">
+            <div class="mb-3">
+              <input type="text" id="profileUsername" class="form-control" placeholder="Username" required />
+            </div>
+            <div class="mb-3">
+              <input type="email" id="profileEmail" class="form-control" placeholder="Email" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Read More Modal -->
+  <div class="modal fade" id="readMoreModal" tabindex="-1" aria-labelledby="readMoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="readMoreModalLabel">Blog Post</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="readMoreContent">
+          <!-- Full blog content will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded JavaScript -->
+  <script>
+    // Function to show a section and hide others
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(section => {
+        section.style.display = 'none';
+      });
+      document.getElementById(sectionId).style.display = 'block';
+    }
+    
+    // Navigation button handlers
+    document.getElementById('navLogin').addEventListener('click', () => showSection('loginSection'));
+    document.getElementById('navRegister').addEventListener('click', () => showSection('registerSection'));
+    document.getElementById('navDashboard').addEventListener('click', () => showSection('dashboardSection'));
+    document.getElementById('navBlogPosts').addEventListener('click', () => showSection('blogPostsSection'));
+    document.getElementById('navProfile').addEventListener('click', () => showSection('profileSection'));
+
+    // Toggle dark mode
+    document.getElementById("toggleTheme").addEventListener("click", function() {
+      document.body.classList.toggle("dark-mode");
+    });
+
+    // Link inside forms to switch sections
+    document.getElementById('gotoRegister').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('registerSection');
+    });
+    document.getElementById('gotoLogin').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('loginSection');
+    });
+
+    // Handle registration
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const username = document.getElementById("regUsername").value;
+      const email = document.getElementById("regEmail").value;
+      const password = document.getElementById("regPassword").value;
+      
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        showSection('dashboardSection');
+        fetchBlogs();
+      } else {
+        alert(data.message);
+      }
+    });
+    
+    // Handle login
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        showSection('dashboardSection');
+        fetchBlogs();
+      } else {
+        alert(data.message);
+      }
+    });
+    
+    // Handle new post submission
+    document.getElementById("postForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in first!");
+        showSection('loginSection');
+        return;
+      }
+      const title = document.getElementById("postTitle").value;
+      const content = document.getElementById("postContent").value;
+      const image = document.getElementById("postImage").value;
+
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ title, content, image }),
+      });
+
+      if (response.ok) {
+        document.getElementById("postForm").reset();
+        fetchBlogs();
+        alert("Post created successfully!");
+      } else {
+        alert("Error creating post.");
+      }
+    });
+
+    // Fetch and display blog posts
+    async function fetchBlogs() {
+      const response = await fetch("/api/posts");
+      const blogs = await response.json();
+      
+      document.getElementById("blogContainer").innerHTML = blogs.map(blog => `
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow-lg border-0">
+            ${blog.image ? `<img src="${blog.image}" class="card-img-top" alt="Blog Image">` : ""}
+            <div class="card-body">
+              <h5 class="card-title">${blog.title}</h5>
+              <p class="card-text">${blog.content.substring(0, 100)}...</p>
+              <p class="author-info"><small>By ${blog.author.username} (${blog.author.email})</small></p>
+              <p class="post-date"><small>${new Date(blog.createdAt).toLocaleString()}</small></p>
+              <button class="btn btn-primary read-more" data-blog='${JSON.stringify(blog)}'>Read More</button>
+              <button class="btn btn-sm btn-outline-primary like-btn" data-id="${blog._id}">
+                Like (${blog.likes ? blog.likes.length : 0})
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Event delegation for Read More and Like buttons
+    document.getElementById('blogContainer').addEventListener('click', async function(e) {
+      // Read More functionality
+      if (e.target && e.target.matches('button.read-more')) {
+        let blog = JSON.parse(e.target.getAttribute('data-blog'));
+        readMore(blog);
+      }
+      // Like functionality
+      if (e.target && e.target.matches('button.like-btn')) {
+        const postId = e.target.getAttribute('data-id');
+        const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Please log in first!");
+          showSection('loginSection');
+          return;
+        }
+        const response = await fetch("/api/posts/like", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ postId }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          e.target.innerText = `Like (${data.likes})`;
+        } else {
+          alert("Error toggling like.");
+        }
+      }
+    });
+
+    // Read More function to show full post in modal
+    function readMore(blog) {
+      document.getElementById("readMoreModalLabel").innerText = blog.title;
+      let content = '';
+      if(blog.image) {
+        content += `<img src="${blog.image}" class="img-fluid mb-3" alt="Blog Image">`;
+      }
+      content += `<p>${blog.content}</p>`;
+      content += `<p class="author-info"><small>By ${blog.author.username} (${blog.author.email})</small></p>`;
+      content += `<p class="post-date"><small>${new Date(blog.createdAt).toLocaleString()}</small></p>`;
+      document.getElementById("readMoreContent").innerHTML = content;
+      
+      var modal = new bootstrap.Modal(document.getElementById('readMoreModal'));
+      modal.show();
+    }
+
+    // Profile section: Fetch profile data on navigation
+    document.getElementById('navProfile').addEventListener('click', async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in first!");
+        showSection('loginSection');
+        return;
+      }
+      const response = await fetch("/api/users/profile", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const user = await response.json();
+        document.getElementById("profileUsername").value = user.username;
+        document.getElementById("profileEmail").value = user.email;
+      } else {
+        alert("Error fetching profile");
+      }
+    });
+
+    // Handle profile update submission
+    document.getElementById("profileForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const token = localStorage.getItem("token");
+      const username = document.getElementById("profileUsername").value;
+      const email = document.getElementById("profileEmail").value;
+      
+      const response = await fetch("/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ username, email }),
+      });
+      if (response.ok) {
+        alert("Profile updated successfully!");
+      } else {
+        alert("Error updating profile.");
+      }
+    });
+
+    // Load blogs on page load
+    fetchBlogs();
+    // Set default section (Blog Posts)
+    showSection('blogPostsSection');
+  </script>
+  
+  <!-- Bootstrap JS Bundle CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
