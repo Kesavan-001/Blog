@@ -4,7 +4,7 @@
   "description": "A blogging platform",
   "main": "backend/index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node backend/index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
