@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BlogVerse</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="public/styles.css" />
+    <style>
+      .dark-mode { background-color: #121212; color: #ffffff; }
+      .dark-mode .card { background-color: #1e1e1e; color: #ffffff; }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#">BlogVerse</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navmenu">
+          <div class="ms-auto">
+            <button id="navLogin" class="btn btn-outline-light me-2">Login</button>
+            <button id="navRegister" class="btn btn-outline-light me-2">Register</button>
+            <button id="navDashboard" class="btn btn-outline-light me-2">Dashboard</button>
+            <button id="navBlogPosts" class="btn btn-outline-light me-2">Blog Posts</button>
+            <button id="navProfile" class="btn btn-outline-light me-2">Profile</button>
+            <button id="navLogout" class="btn btn-outline-light me-2" style="display: none;">Logout</button>
+            <button id="toggleTheme" class="btn btn-outline-light">Dark Mode</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <section id="loginSection" class="section" style="display: none">
+      <div class="container">
+        <div class="card form-card shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4">Login</h2>
+            <form id="loginForm">
+              <div class="mb-3">
+                <input type="email" id="loginEmail" class="form-control" placeholder="Email" required />
+              </div>
+              <div class="mb-3">
+                <input type="password" id="loginPassword" class="form-control" placeholder="Password" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+            <p class="text-center mt-3">
+              Don't have an account? <a href="#" id="gotoRegister">Register here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="registerSection" class="section" style="display: none">
+      <div class="container">
+        <div class="card form-card shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4">Register</h2>
+            <form id="registerForm">
+              <div class="mb-3">
+                <input type="text" id="regUsername" class="form-control" placeholder="Username" required />
+              </div>
+              <div class="mb-3">
+                <input type="email" id="regEmail" class="form-control" placeholder="Email" required />
+              </div>
+              <div class="mb-3">
+                <input type="password" id="regPassword" class="form-control" placeholder="Password" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+            <p class="text-center mt-3">
+              Already have an account? <a href="#" id="gotoLogin">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboardSection" class="section" style="display: none">
+      <div class="container">
+        <h2 class="text-center mb-4">Create a New Blog Post</h2>
+        <div class="card form-card shadow-lg">
+          <div class="card-body">
+            <form id="postForm" enctype="multipart/form-data">
+              <div class="mb-3">
+                <input type="text" id="postTitle" class="form-control" placeholder="Title" required />
+              </div>
+              <div class="mb-3">
+                <textarea id="postContent" class="form-control" placeholder="Content" rows="5" required></textarea>
+              </div>
+              <div class="mb-3">
+                <input type="file" id="postImageFile" class="form-control" accept="image/*" />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Post</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="blogPostsSection" class="section" style="display: none">
+      <div class="container">
+        <h2 class="text-center mb-4">All Blog Posts</h2>
+        <div id="blogContainer" class="row g-4"></div>
+      </div>
+    </section>
+
+    <section id="profileSection" class="section" style="display: none">
+      <div class="container">
+        <h2 class="text-center mb-4">Profile</h2>
+        <div class="card form-card shadow-lg">
+          <div class="card-body">
+            <form id="profileForm">
+              <div class="mb-3">
+                <input type="text" id="profileUsername" class="form-control" placeholder="Username" required />
+              </div>
+              <div class="mb-3">
+                <input type="email" id="profileEmail" class="form-control" placeholder="Email" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="modal fade" id="readMoreModal" tabindex="-1" aria-labelledby="readMoreModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="readMoreModalLabel">Blog Post</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="readMoreContent"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editPostModalLabel">Edit Blog Post</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editPostForm">
+              <input type="hidden" id="editPostId" />
+              <div class="mb-3">
+                <input type="text" id="editPostTitle" class="form-control" placeholder="Title" required />
+              </div>
+              <div class="mb-3">
+                <textarea id="editPostContent" class="form-control" placeholder="Content" rows="5" required></textarea>
+              </div>
+              <div class="mb-3">
+                <input type="url" id="editPostImage" class="form-control" placeholder="Image URL (optional)" />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="public/js/config.js"></script>
+    <script>
+      const IMGBB_API_KEY = '9f571adeec5067b6de68c26e0e9e816d';
+
+      function showToast(message, type = 'error') {
+        const toast = document.createElement('div');
+        toast.style.position = 'fixed';
+        toast.style.top = '20px';
+        toast.style.right = '20px';
+        toast.style.padding = '10px 20px';
+        toast.style.zIndex = '1000';
+        toast.style.borderRadius = '5px';
+        toast.style.color = '#fff';
+        toast.style.backgroundColor = type === 'error' ? '#dc3545' : '#28a745';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach((section) => {
+          section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+      }
+
+      document.getElementById('toggleTheme').addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+      });
+
+      document.getElementById('navLogin').addEventListener('click', () => showSection('loginSection'));
+      document.getElementById('navRegister').addEventListener('click', () => showSection('registerSection'));
+      document.getElementById('navDashboard').addEventListener('click', () => showSection('dashboardSection'));
+      document.getElementById('navBlogPosts').addEventListener('click', () => showSection('blogPostsSection'));
+      document.getElementById('navProfile').addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          showToast('Please log in first!');
+          showSection('loginSection');
+          return;
+        }
+        try {
+          const response = await fetch(API_BASE_URL + '/users/profile', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!response.ok) throw new Error('Failed to fetch profile');
+          const user = await response.json();
+          document.getElementById('profileUsername').value = user.username;
+          document.getElementById('profileEmail').value = user.email;
+          showSection('profileSection');
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+
+      document.getElementById('gotoRegister').addEventListener('click', (e) => {
+        e.preventDefault();
+        showSection('registerSection');
+      });
+      document.getElementById('gotoLogin').addEventListener('click', (e) => {
+        e.preventDefault();
+        showSection('loginSection');
+      });
+
+      document.getElementById('registerForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        try {
+          const response = await fetch(API_BASE_URL + '/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            showSection('dashboardSection');
+            fetchBlogs();
+          } else {
+            throw new Error(data.message || 'Registration failed');
+          }
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+
+      document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        try {
+          const response = await fetch(API_BASE_URL + '/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await response.json();
+          console.log('Login Response:', data);
+          if (response.ok) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user || {}));
+            console.log('Token Stored:', localStorage.getItem('token'));
+            console.log('User Stored:', localStorage.getItem('user'));
+            showSection('dashboardSection');
+            fetchBlogs();
+          } else {
+            throw new Error(data.message || 'Login failed');
+          }
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+
+      document.getElementById('postImageFile').addEventListener('change', async function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('key', IMGBB_API_KEY);
+        formData.append('image', file);
+
+        try {
+          const response = await fetch('https://api.imgbb.com/1/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById('postImage').value = data.data.url;
+            showToast('Image uploaded successfully!', 'success');
+          } else {
+            throw new Error(data.error.message || 'Image upload failed');
+          }
+        } catch (error) {
+          showToast('Error uploading image: ' + error.message);
+        }
+      });
+      document.getElementById('postForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      showToast('Please log in first!');
+      showSection('loginSection');
+      return;
+    }
+    const title = document.getElementById('postTitle').value;
+    const content = document.getElementById('postContent').value;
+    const imageFile = document.getElementById('postImageFile').files[0];
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    if (imageFile) formData.append('image', imageFile);
+
+    try {
+      const response = await fetch(API_BASE_URL + '/posts/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      const data = await response.json();
+      console.log('Post Response:', data);
+      if (response.ok) {
+        document.getElementById('postForm').reset();
+        fetchBlogs();
+        showToast('Post created successfully!', 'success');
+      } else {
+        throw new Error(data.message || 'Error creating post');
+      }
+    } catch (error) {
+      console.error('Post Error:', error);
+      showToast(error.message);
+    }
+  });
+
+      async function fetchBlogs() {
+        try {
+          const response = await fetch(API_BASE_URL + '/posts');
+          if (!response.ok) throw new Error('Failed to fetch blog posts');
+          const blogs = await response.json();
+          console.log('Fetched Blogs:', blogs);
+          const currentUser = JSON.parse(localStorage.getItem('user')) || {};
+          document.getElementById('blogContainer').innerHTML = blogs
+            .map((blog) => {
+              const blogAuthorId = blog.author && blog.author._id ? blog.author._id : null;
+              const currentUserId = currentUser._id || null;
+              const isAuthor = blogAuthorId && currentUserId && currentUserId === blogAuthorId;
+              const imageUrl = blog.image && typeof blog.image === 'string' ? blog.image : '';
+              return `
+                <div class="col-md-6 col-lg-4">
+                  <div class="card shadow-lg border-0">
+                    ${imageUrl ? `<img src="${blog.image}" class="card-img-top" alt="Blog Image" onerror="this.style.display='none'">` : ''}
+                    <div class="card-body">
+                      <h5 class="card-title">${blog.title || 'Untitled'}</h5>
+                      <p class="card-text">${(blog.content || '').substring(0, 100)}${blog.content && blog.content.length > 100 ? '...' : ''}</p>
+                      <p class="author-info">
+                        <small>By ${blog.author && blog.author.username ? blog.author.username : 'Unknown'} 
+                        (${blog.author && blog.author.email ? blog.author.email : 'No email'})</small>
+                      </p>
+                      <p class="post-date"><small>${new Date(blog.createdAt).toLocaleString()}</small></p>
+                      <p><small>Comments: ${blog.comments ? blog.comments.length : 0}</small></p>
+                      <button class="btn btn-primary read-more" data-id="${blog._id}">Read More</button>
+                      <button class="btn btn-sm btn-outline-primary like-btn" data-id="${blog._id}">
+                        Like (${blog.likes ? blog.likes.length : 0})
+                      </button>
+                      ${isAuthor ? `
+                        <button class="btn btn-sm btn-warning edit-btn" data-id="${blog._id}">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${blog._id}">Delete</button>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+              `;
+            })
+            .join('');
+        } catch (error) {
+          showToast(error.message);
+          console.error('Fetch Blogs Error:', error);
+        }
+      }
+
+      document.getElementById('blogContainer').addEventListener('click', async function (e) {
+        if (e.target.matches('button.read-more')) {
+          const postId = e.target.getAttribute('data-id');
+          try {
+            const response = await fetch(API_BASE_URL + '/posts/' + postId);
+            if (!response.ok) throw new Error('Failed to fetch post');
+            const blog = await response.json();
+            readMore(blog);
+          } catch (error) {
+            showToast(error.message);
+          }
+        }
+        if (e.target.matches('button.like-btn')) {
+          const postId = e.target.getAttribute('data-id');
+          const token = localStorage.getItem('token');
+          if (!token) {
+            showToast('Please log in first!');
+            showSection('loginSection');
+            return;
+          }
+          try {
+            const response = await fetch(API_BASE_URL + '/posts/like', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ postId }),
+            });
+            if (!response.ok) throw new Error('Error toggling like');
+            const data = await response.json();
+            e.target.innerText = `Like (${data.likes})`;
+          } catch (error) {
+            showToast(error.message);
+          }
+        }
+        if (e.target.matches('button.edit-btn')) {
+          const postId = e.target.getAttribute('data-id');
+          openEditModal(postId);
+        }
+        if (e.target.matches('button.delete-btn')) {
+          const postId = e.target.getAttribute('data-id');
+          const token = localStorage.getItem('token');
+          if (!token) {
+            showToast('Please log in first!');
+            showSection('loginSection');
+            return;
+          }
+          if (confirm('Are you sure you want to delete this post?')) {
+            try {
+              const response = await fetch(API_BASE_URL + '/posts/' + postId, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+              if (!response.ok) throw new Error('Error deleting post');
+              showToast('Post deleted successfully!', 'success');
+              fetchBlogs();
+            } catch (error) {
+              showToast(error.message);
+            }
+          }
+        }
+      });
+
+      function readMore(blog) {
+        document.getElementById('readMoreModalLabel').innerText = blog.title || 'Untitled';
+        let content = '';
+        if (blog.image && typeof blog.image === 'string') {
+          content += `<img src="${blog.image}" class="img-fluid mb-3" alt="Blog Image" onerror="this.style.display='none'">`;
+        }
+        content += `<p>${blog.content || ''}</p>`;
+        content += `<p class="author-info"><small>By ${blog.author && blog.author.username ? blog.author.username : 'Unknown'} (${blog.author && blog.author.email ? blog.author.email : 'No email'})</small></p>`;
+        content += `<p class="post-date"><small>${new Date(blog.createdAt).toLocaleString()}</small></p>`;
+        content += `<h6>Comments (${blog.comments ? blog.comments.length : 0}):</h6>`;
+        content += `<ul>`;
+        (blog.comments || []).forEach(comment => {
+          content += `<li><strong>${comment.author && comment.author.username ? comment.author.username : 'Unknown'}</strong>: ${comment.comment} <small>(${new Date(comment.createdAt).toLocaleString()})</small></li>`;
+        });
+        content += `</ul>`;
+        content += `
+          <form id="commentForm" data-post-id="${blog._id}">
+            <div class="mb-3">
+              <textarea id="commentInput" class="form-control" placeholder="Add a comment" rows="2" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Comment</button>
+          </form>
+        `;
+        document.getElementById('readMoreContent').innerHTML = content;
+
+        var modal = new bootstrap.Modal(document.getElementById('readMoreModal'));
+        modal.show();
+
+        document.getElementById('commentForm').addEventListener('submit', async function (e) {
+          e.preventDefault();
+          const token = localStorage.getItem('token');
+          if (!token) {
+            showToast('Please log in first!');
+            showSection('loginSection');
+            return;
+          }
+          const postId = e.target.getAttribute('data-post-id');
+          const comment = document.getElementById('commentInput').value;
+          try {
+            const response = await fetch(API_BASE_URL + '/posts/comment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ postId, comment }),
+            });
+            if (!response.ok) throw new Error('Error adding comment');
+            document.getElementById('commentInput').value = '';
+            fetchBlogs();
+            readMore(await response.json());
+          } catch (error) {
+            showToast(error.message);
+          }
+        });
+      }
+
+      async function openEditModal(postId) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          showToast('Please log in first!');
+          showSection('loginSection');
+          return;
+        }
+        try {
+          const response = await fetch(API_BASE_URL + '/posts/' + postId, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!response.ok) throw new Error('Error fetching post details');
+          const post = await response.json();
+          document.getElementById('editPostId').value = post._id;
+          document.getElementById('editPostTitle').value = post.title || '';
+          document.getElementById('editPostContent').value = post.content || '';
+          document.getElementById('editPostImage').value = post.image || '';
+          var modal = new bootstrap.Modal(document.getElementById('editPostModal'));
+          modal.show();
+        } catch (error) {
+          showToast(error.message);
+        }
+      }
+
+      document.getElementById('editPostForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+        if (!token) {
+          showToast('Please log in first!');
+          showSection('loginSection');
+          return;
+        }
+        const postId = document.getElementById('editPostId').value;
+        const title = document.getElementById('editPostTitle').value;
+        const content = document.getElementById('editPostContent').value;
+        const image = document.getElementById('editPostImage').value;
+        try {
+          const response = await fetch(API_BASE_URL + '/posts/' + postId, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ title, content, image }),
+          });
+          if (!response.ok) throw new Error('Error updating post');
+          showToast('Post updated successfully!', 'success');
+          var modalEl = document.getElementById('editPostModal');
+          var modal = bootstrap.Modal.getInstance(modalEl);
+          modal.hide();
+          fetchBlogs();
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+
+      document.getElementById('profileForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+        const username = document.getElementById('profileUsername').value;
+        const email = document.getElementById('profileEmail').value;
+        try {
+          const response = await fetch(API_BASE_URL + '/users/profile', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ username, email }),
+          });
+          if (response.ok) {
+            showToast('Profile updated successfully!', 'success');
+          } else {
+            throw new Error('Error updating profile');
+          }
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+
+      function updateNavbar() {
+        const token = localStorage.getItem('token');
+        if (token) {
+          document.getElementById('navLogin').style.display = 'none';
+          document.getElementById('navRegister').style.display = 'none';
+          document.getElementById('navLogout').style.display = 'inline-block';
+        } else {
+          document.getElementById('navLogin').style.display = 'inline-block';
+          document.getElementById('navRegister').style.display = 'inline-block';
+          document.getElementById('navLogout').style.display = 'none';
+        }
+      }
+
+      document.getElementById('navLogout').addEventListener('click', function () {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        updateNavbar();
+        window.location.reload();
+      });
+
+      updateNavbar();
+      fetchBlogs();
+      showSection('blogPostsSection');
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
