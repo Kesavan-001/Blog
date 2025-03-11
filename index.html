@@ -272,8 +272,6 @@
           if (response.ok) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user || {}));
-            console.log('Token Stored:', localStorage.getItem('token'));
-            console.log('User Stored:', localStorage.getItem('user'));
             showSection('dashboardSection');
             fetchBlogs();
           } else {
@@ -334,7 +332,6 @@
         body: formData,
       });
       const data = await response.json();
-      console.log('Post Response:', data);
       if (response.ok) {
         document.getElementById('postForm').reset();
         fetchBlogs();
@@ -353,7 +350,6 @@
           const response = await fetch(API_BASE_URL + '/posts');
           if (!response.ok) throw new Error('Failed to fetch blog posts');
           const blogs = await response.json();
-          console.log('Fetched Blogs:', blogs);
           const currentUser = JSON.parse(localStorage.getItem('user')) || {};
           document.getElementById('blogContainer').innerHTML = blogs
             .map((blog) => {
